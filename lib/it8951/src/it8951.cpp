@@ -18,7 +18,8 @@ void IT8951::lcdWaitForReady() {
     const uint32_t start = millis();
     while (digitalRead(pins_.busy) == LOW) {
         if (millis() - start > 3000) {
-            Log_error("%s: HRDY timeout!", TAG);
+            // Serial-only — HRDY timeouts are expected during the multi-attempt probe sequence
+            Log_info_serial("%s: HRDY timeout", TAG);
             break;
         }
         vTaskDelay(pdMS_TO_TICKS(1));
