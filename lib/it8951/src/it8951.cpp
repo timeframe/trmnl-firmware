@@ -205,14 +205,18 @@ bool IT8951::probeController(const char *label, bool send_sys_run, int vcom_sele
 // ─── Bulk framebuffer upload ────────────────────────────────────────────────
 
 void IT8951::writeFramebufferRows4bpp(const uint16_t *buf, uint16_t width_in_words, uint16_t height) {
-    // One row at 1872px / 4bpp = 936 bytes. Send row-by-row with word-reversal
-    // to match Seeed's working host upload flow.
+    // Send row-by-row with word-reversal but preserve byte order within each word.
+    // The IT8951 interprets the first received byte as the high byte of each 16-bit word,
+    // so we must send the framebuffer bytes in their natural memory order (low address first)
+    // to keep nibble/pixel alignment correct.
     uint8_t row_buffer[936];
     const uint32_t row_size_bytes = uint32_t(width_in_words) * 2;
     if (row_size_bytes > sizeof(row_buffer)) {
         Log_error("%s: Row buffer too small for %u-byte row", TAG, (unsigned)row_size_bytes);
         return;
     }
+
+    const uint8_t *byte_buf = reinterpret_cast<const uint8_t *>(buf);
 
     digitalWrite(pins_.cs, LOW);
     SPI.beginTransaction(SPISettings(spi_frequency_, MSBFIRST, SPI_MODE0));
@@ -221,12 +225,12 @@ void IT8951::writeFramebufferRows4bpp(const uint16_t *buf, uint16_t width_in_wor
     lcdWaitForReady();
 
     for (uint16_t y = 0; y < height; y++) {
-        const uint32_t row_start = uint32_t(y) * width_in_words;
+        const uint32_t row_byte_start = uint32_t(y) * row_size_bytes;
         for (uint16_t x = 0; x < width_in_words; x++) {
-            const uint16_t word = buf[row_start + (width_in_words - 1 - x)];
-            const uint32_t byte_index = uint32_t(x) * 2;
-            row_buffer[byte_index] = static_cast<uint8_t>(word >> 8);
-            row_buffer[byte_index + 1] = static_cast<uint8_t>(word & 0xFF);
+            const uint32_t src_byte_offset = row_byte_start + (width_in_words - 1 - x) * 2;
+            const uint32_t dst_byte_index = uint32_t(x) * 2;
+            row_buffer[dst_byte_index] = byte_buf[src_byte_offset];
+            row_buffer[dst_byte_index + 1] = byte_buf[src_byte_offset + 1];
         }
         SPI.writeBytes(row_buffer, row_size_bytes);
         if ((y & 0x07) == 0) {
