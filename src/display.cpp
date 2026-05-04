@@ -2217,7 +2217,15 @@ void display_show_msg(uint8_t *image_buffer, MSG message_type, const char *messa
     case FILL_WHITE:
     {
         Log_info("Display set to white");
+#ifdef BOARD_X_CLASS
+        if (bbep.getMode() == BB_MODE_4BPP) {
+            bbep.fillScreen(15); // in 4-bit mode, color 15 = white
+        } else {
+            bbep.fillScreen(BBEP_WHITE);
+        }
+#else
         bbep.fillScreen(BBEP_WHITE);
+#endif
     }
     default:
         break;
