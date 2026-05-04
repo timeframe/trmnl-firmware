@@ -2227,6 +2227,26 @@ void display_show_msg(uint8_t *image_buffer, MSG message_type, const char *messa
         bbep.fillScreen(BBEP_WHITE);
 #endif
     }
+    break;
+    case WIFI_RETRY_LIMIT:
+    {
+        const char string1[] = "Maximum WiFi retries reached.";
+        bbep.getStringBox(string1, &rect);
+#ifdef __BB_EPAPER__
+        bbep.setCursor((bbep.width() - rect.w) / 2, 340);
+#else
+        bbep.setCursor((bbep.width() - rect.w) / 2, bbep.height() - 140 - (rect.h*3));
+#endif
+        bbep.println(string1);
+        const char string2[] = "Press button to manually refresh.";
+        bbep.getStringBox(string2, &rect);
+        bbep.setCursor((bbep.width() - rect.w) / 2, -1);
+        bbep.println(string2);
+        const char string3[] = "Hold button to reset WiFi and try another network.";
+        bbep.getStringBox(string3, &rect);
+        bbep.setCursor((bbep.width() - rect.w) / 2, -1);
+        bbep.print(string3);
+    }
     default:
         break;
     }

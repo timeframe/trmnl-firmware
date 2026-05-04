@@ -36,6 +36,7 @@ enum MSG
   MAC_NOT_REGISTERED,
   TEST,
   FILL_WHITE,
+  WIFI_RETRY_LIMIT,
 };
 
 typedef struct dp_tag

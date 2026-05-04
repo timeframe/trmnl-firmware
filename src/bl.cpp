@@ -89,6 +89,7 @@ static void downloadSetupImage();                    // download and display set
 static void resetDeviceCredentials(void);            // reset device credentials API key, Friendly ID, Wi-Fi SSID and password
 static void checkAndPerformFirmwareUpdate(void);     // OTA update
 static void goToSleep(void);                         // sleep preparing
+static void goToSleepButtonOnly(void);               // sleep until button press, no timer
 static bool setClock(void);                          // clock synchronization
 static float readBatteryVoltage(void);               // battery voltage reading
 static void submitStoredLogs(void);
@@ -1127,7 +1128,6 @@ void bl_init(void)
 
       Log_fatal_submit("Connection failed! WL Status: %d", WiFi.status());
 
-      // Go to deep sleep
       wifiErrorDeepSleep();
     }
   }
@@ -1239,7 +1239,7 @@ void bl_init(void)
     preferences.putInt(PREFERENCES_CONNECT_API_RETRY_COUNT, 1);
   }
 
-  if (request_result != HTTPS_SUCCESS && request_result != HTTPS_NO_ERR && request_result != HTTPS_NO_REGISTER && request_result != HTTPS_RESET && request_result != HTTPS_PLUGIN_NOT_ATTACHED)
+  if (request_result != HTTPS_SUCCESS && request_result != HTTPS_NO_ERR && request_result != HTTPS_NO_REGISTER && request_result != HTTPS_RESET && request_result != HTTPS_PLUGIN_NOT_ATTACHED && current_msg != WIFI_FAILED)
   {
     uint8_t retries = preferences.getInt(PREFERENCES_CONNECT_API_RETRY_COUNT);
     iqs323_task_i2c_lock();
@@ -1281,7 +1281,7 @@ void bl_init(void)
 
   else
   {
-    Log_info("Connection done successfully. Retries counter reset.");
+    Log_info("Connection done successfully or WiFi failed. Retries counter reset.");
     preferences.putInt(PREFERENCES_CONNECT_API_RETRY_COUNT, 1);
   }
 
@@ -3126,6 +3126,31 @@ static void goToSleep(void)
   esp_deep_sleep_start();
 }
 
+static void goToSleepButtonOnly(void)
+{
+  submitStoredLogs();
+  if (WiFi.status() == WL_CONNECTED) {
+    WiFi.disconnect();
+  }
+  WiFi.mode(WIFI_OFF);
+  filesystem_deinit();
+  preferences.end();
+#if CONFIG_IDF_TARGET_ESP32
+  #define BUTTON_PIN_BITMASK_BTN(GPIO) (1ULL << GPIO)
+  esp_sleep_enable_ext1_wakeup(BUTTON_PIN_BITMASK_BTN(PIN_INTERRUPT), ESP_EXT1_WAKEUP_ALL_LOW);
+#elif CONFIG_IDF_TARGET_ESP32C3
+  esp_deep_sleep_enable_gpio_wakeup(1 << PIN_INTERRUPT, ESP_GPIO_WAKEUP_GPIO_LOW);
+#elif CONFIG_IDF_TARGET_ESP32S3
+  esp_sleep_enable_ext0_wakeup((gpio_num_t)PIN_INTERRUPT, 0);
+#else
+#error "Unsupported ESP32 target for GPIO wakeup configuration"
+#endif
+#ifdef BOARD_XTEINK_X4
+  gpio_hold_en(GPIO_NUM_13);
+  gpio_deep_sleep_hold_en();
+#endif
+  esp_deep_sleep_start();
+}
 void config_gpio_for_lp() {
 
 #ifdef BOARD_TRMNL_X
@@ -3575,8 +3600,11 @@ static void wifiErrorDeepSleep()
     break;
 
   default:
-    preferences.putUInt(PREFERENCES_SLEEP_TIME_KEY, SLEEP_TIME_TO_SLEEP);
-    break;
+    preferences.putInt(PREFERENCES_CONNECT_WIFI_RETRY_COUNT, 1);
+    showMessageWithLogo(WIFI_RETRY_LIMIT);
+    display_sleep();
+    goToSleepButtonOnly();
+    return;
   }
   retry_count++;
   preferences.putInt(PREFERENCES_CONNECT_WIFI_RETRY_COUNT, retry_count);
