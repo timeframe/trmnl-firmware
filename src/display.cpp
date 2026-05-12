@@ -1632,12 +1632,9 @@ void display_show_image(uint8_t *image_buffer, int data_size, bool bWait)
     }
 #endif
 #ifdef BB_EPAPER
-    if (i426Workaround) {
-        // After a partial update, the 4.26" 800x480 needs to be 'reset' to accept writes
-        // This is only needed if the user pressed the WAKE button and there will be 2 updates
-        // while the power is on
-        bbep.initIO(EPD_DC_PIN, EPD_RST_PIN, EPD_BUSY_PIN, EPD_CS_PIN, EPD_MOSI_PIN, EPD_SCK_PIN, 8000000);
-    }
+    // Re-initialize the EPD controller to ensure it is awake and ready.
+    // Needed after any non-blocking refresh with light sleep enabled.
+    bbep.initIO(EPD_DC_PIN, EPD_RST_PIN, EPD_BUSY_PIN, EPD_CS_PIN, EPD_MOSI_PIN, EPD_SCK_PIN, 8000000);
 #endif // BB_EPAPER
     if (isPNG == true && data_size < MAX_IMAGE_SIZE)
     {
@@ -2296,6 +2293,7 @@ void display_show_msg(uint8_t *image_buffer, MSG message_type, const char *messa
         break;
     }
 #ifdef BB_EPAPER
+    bbep.initIO(EPD_DC_PIN, EPD_RST_PIN, EPD_BUSY_PIN, EPD_CS_PIN, EPD_MOSI_PIN, EPD_SCK_PIN, 8000000);
     bbep.writePlane(PLANE_0);
     bbep.refresh(REFRESH_FULL, true);
     bbep.freeBuffer();
@@ -2429,6 +2427,11 @@ void display_show_msg(uint8_t *image_buffer, MSG message_type, String friendly_i
     if (message_type == WIFI_CONNECT)
     {
         Log_info("Display set to white");
+#ifdef BB_EPAPER
+        // Re-initialize the EPD controller in case a previous non-blocking
+        // refresh (e.g. the boot logo) left it busy or in deep-sleep.
+        bbep.initIO(EPD_DC_PIN, EPD_RST_PIN, EPD_BUSY_PIN, EPD_CS_PIN, EPD_MOSI_PIN, EPD_SCK_PIN, 8000000);
+#endif
         bbep.fillScreen(BBEP_WHITE);
 #ifdef BB_EPAPER
         bbep.writePlane(PLANE_0);
@@ -2545,6 +2548,7 @@ void display_show_msg(uint8_t *image_buffer, MSG message_type, String friendly_i
     }
     Log_info("Start drawing...");
 #ifdef BB_EPAPER
+    bbep.initIO(EPD_DC_PIN, EPD_RST_PIN, EPD_BUSY_PIN, EPD_CS_PIN, EPD_MOSI_PIN, EPD_SCK_PIN, 8000000);
     bbep.writePlane(PLANE_0);
     bbep.refresh(REFRESH_FULL, true);
     bbep.freeBuffer();
