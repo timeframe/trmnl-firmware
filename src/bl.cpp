@@ -2705,6 +2705,16 @@ static bool performApiSetup()
     message_str.toCharArray(message_buffer, message_str.length() + 1);
 
     Log.info("%s [%d]: status - %d\r\n", __FILE__, __LINE__, status);
+
+    if (image_url.length() == 0)
+    {
+      // No setup image URL provided; show friendly ID without downloading
+      String friendly_id = preferences.getString(PREFERENCES_FRIENDLY_ID, PREFERENCES_FRIENDLY_ID_DEFAULT);
+      display_show_msg(storedLogoOrDefault(0), FRIENDLY_ID, friendly_id, true, "", String(message_buffer));
+      need_to_refresh_display = 0;
+      return false;
+    }
+
     return true;
   }
   else if (url_status == 404)
