@@ -1120,12 +1120,7 @@ void bl_init(void)
     }
     else
     {
-      if (current_msg != WIFI_FAILED)
-      {
-        showMessageWithLogo(WIFI_FAILED);
-        current_msg = WIFI_FAILED;
-      }
-
+      // WiFi not connected - keep existing screen content unchanged
       Log_fatal_submit("Connection failed! WL Status: %d", WiFi.status());
 
       wifiErrorDeepSleep();
@@ -1181,8 +1176,7 @@ void bl_init(void)
     {
       WiFi.disconnect(true);
 
-      showMessageWithLogo(WIFI_FAILED);
-
+      // WiFi captive portal failed - keep existing screen content unchanged
       Log_error("Failed to connect or hit timeout");
 
       // Go to deep sleep
@@ -3611,7 +3605,7 @@ static void wifiErrorDeepSleep()
 
   default:
     preferences.putInt(PREFERENCES_CONNECT_WIFI_RETRY_COUNT, 1);
-    showMessageWithLogo(WIFI_RETRY_LIMIT);
+    // WiFi retry limit reached - keep existing screen content unchanged
     display_sleep();
     goToSleepButtonOnly();
     return;
