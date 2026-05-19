@@ -864,7 +864,6 @@ void bl_init(void)
     {
     case LongPress:
       Log_info("WiFi reset");
-      buzzer_beep_pattern(2, 100, 100);
       WifiCaptivePortal.resetSettings();
       break;
     case DoubleClick:
