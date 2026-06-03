@@ -13,7 +13,9 @@
 #include <vector>
 #include "wifi-types.h"
 
+#ifndef WIFI_SSID
 #define WIFI_SSID "TRMNL"
+#endif
 #define WIFI_PASSWORD NULL
 
 // Define the DNS interval in milliseconds between processing DNS requests

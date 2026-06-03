@@ -42,7 +42,6 @@
 #include "loading.h"
 #include <wifi-helpers.h>
 #include <sys/time.h>
-#include <buzzer.h>
 #ifdef SENSOR_SDA
 #include <bb_scd41.h>
 #include <bb_temperature.h>
@@ -638,7 +637,6 @@ void bl_init(void)
 #endif
   Log_info("BL init success");
   pins_init();
-  buzzer_init();
   vBatt = readBatteryVoltage(); // Read the battery voltage BEFORE WiFi is turned on
 #ifdef SENSOR_SDA
   // check if there is a SCD41 or supported temperature sensor attached

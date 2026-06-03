@@ -3,6 +3,7 @@
 #include <Arduino.h>
 #include <functional>
 #include <esp_task_wdt.h>
+#include "config.h"
 #ifndef SERIAL_FLASHER_INTERFACE_UART
 #define SERIAL_FLASHER_INTERFACE_UART
 #endif
@@ -413,7 +414,7 @@ std::vector<Modem::ModemNetwork> Modem::scanNetworks() {
     int c5 = entry.indexOf(',', c4 + 1);
     int channel = entry.substring(c4 + 1, c5 >= 0 ? c5 : entry.length()).toInt();
 
-    if (ssid.isEmpty() || ssid == "TRMNL") { pos = close; continue; }
+    if (ssid.isEmpty() || ssid.startsWith(WIFI_SSID)) { pos = close; continue; }
 
     // Dedup: keep highest RSSI per SSID
     bool found = false;
