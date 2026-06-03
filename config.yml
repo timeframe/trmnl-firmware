@@ -1,0 +1,144 @@
+# =============================================================================
+# White-Label / Localization Configuration
+# =============================================================================
+# Edit this file to rebrand the firmware for your own product.
+# Run `python scripts/generate_branding.py` (or build with PlatformIO) to
+# regenerate the compiled assets (include/branding.h and WifiCaptivePage.h).
+# =============================================================================
+
+# ---------------------------------------------------------------------------
+# Brand identity
+# ---------------------------------------------------------------------------
+branding:
+  # The product / device name shown in all user-facing text.
+  device_name: "timeframe"
+
+  # Accent colour used throughout the captive-portal web UI and logo.
+  # Any valid CSS colour value works (e.g. "#FF6600", "rgb(0,120,255)").
+  accent_color: "#F86527"
+
+# ---------------------------------------------------------------------------
+# WiFi access-point settings
+# ---------------------------------------------------------------------------
+wifi:
+  # SSID prefix for the configuration hotspot.
+  # The device MAC suffix is appended automatically (e.g. "timeframe-A1B2C3").
+  ap_ssid_prefix: "timeframe"
+
+# ---------------------------------------------------------------------------
+# URLs
+# ---------------------------------------------------------------------------
+urls:
+  # Back-end API base URL (no trailing slash).
+  api_base_url: "https://www.timeframe.app"
+
+  # Setup / onboarding URL shown on the e-paper display.
+  setup_url: "www.timeframe.app/start"
+
+  # URL encoded into the WiFi-connect help QR code.
+  wifi_connect_qr_url: "https://www.timeframe.app/start"
+
+  # URL encoded into the WiFi-failed help QR code.
+  wifi_failed_qr_url: "https://www.timeframe.app/wifi_help"
+
+# ---------------------------------------------------------------------------
+# User-facing text strings
+# ---------------------------------------------------------------------------
+# Use {device_name} anywhere to insert the brand name.
+# Use {setup_url} to insert the setup URL.
+# Use {api_base_url} to insert the API base URL.
+#
+strings:
+  # -- Shipment / first-boot screens --
+  welcome: "Welcome to {device_name}."
+  dock_instructions: "Attach the dock and a USB-C to get started."
+
+  # -- WiFi setup (simple status screen) --
+  wifi_connect_short: "Connect to {device_name} WiFi"
+  wifi_connect_subtitle: "on your phone or computer"
+
+  # -- WiFi setup (full screen with QR code) --
+  firmware_label: "{device_name} firmware"
+  wifi_connect_message: "Connect your phone or computer to the {device_name} WiFi"
+  wifi_connect_qr_help: "or scan the QR code for help"
+
+  # -- Friendly ID / onboarding screen --
+  setup_visit: "Please visit {setup_url}"
+  friendly_id_suffix: "to finish setup"
+
+  # -- WiFi failure --
+  wifi_failed: "Can't establish WiFi connection."
+  wifi_failed_help_button: "Hold button on the back to reset WiFi, or scan QR Code for help."
+  wifi_failed_help_touchbar: "Hold left and right corner of touch bar to reset WiFi, or scan QR Code for help."
+
+  # -- API / connectivity errors --
+  wifi_internal_error: "WiFi connected, but"
+  api_connection_failed_1: "API connection cannot be"
+  api_connection_failed_2: "established. Try to refresh,"
+  api_connection_failed_3: "or scan QR Code for help."
+  wifi_weak: "WiFi connected but signal is weak"
+  api_request_failed: "WiFi connected, request to API failed."
+  api_unable_to_connect: "WiFi connected, unable connect to API."
+  api_setup_failed: "WiFi connected, /api/setup returned error."
+  api_size_error: "WiFi connected, {device_name} content malformed."
+  api_firmware_update_error: "WiFi connected, could not get firmware update from API."
+  api_image_download_error: "WiFi connected, API could not deliver image to device."
+
+  # -- Action prompts (original device) --
+  tap_button: "Short click the button on back,"
+  hold_button_reset: "Wait or reset by holding button on back."
+
+  # -- Action prompts (touchbar device) --
+  tap_touchbar: "Tap the middle of touch bar,"
+  hold_touchbar_reset: "Wait or reset by holding left and right corner of touch bar."
+
+  check_internet: "otherwise check your internet."
+
+  # -- WiFi reset confirmation --
+  wifi_reset_confirm: "Are you sure you want to reset WiFi settings?"
+  wifi_reset_instructions: "Hold middle of touch bar to confirm, tap to cancel."
+
+  # -- Power off confirmation --
+  power_off_confirm: "Turn off device?"
+  power_off_instructions: "Hold middle of touch bar to confirm, tap to cancel."
+
+  # -- Firmware update --
+  fw_update_available: "Firmware update available! Starting now..."
+  fw_update_failed: "Firmware update failed. Device will restart..."
+  fw_update_success: "Firmware update success. Device will restart..."
+
+  # -- WiFi retry --
+  wifi_retry_limit: "Maximum WiFi retries reached."
+  wifi_retry_press: "Press button to manually refresh."
+  wifi_retry_hold: "Hold button to reset WiFi and try another network."
+
+  # -- Shipment --
+  ready_to_ship: "Device is ready to ship!"
+  unplug_usb: "Unplug the USB-C to enter shipping mode."
+
+  # -- Web portal (captive portal pages) --
+  portal_title: "{device_name} Wi-Fi Configuration"
+  portal_advanced_title: "{device_name} Advanced Configuration"
+  portal_reset_warning: "Are you sure? Soft resetting your {device_name} device will delete all WiFi credentials, clear your Device's ID, and reset your API key."
+  portal_server_note: "This button allows you to specify a custom API server (also known as BYOS) for your device. Most users don't want this, and will use the official server with their {device_name}. Are you sure you want to have a custom server specified?"
+  portal_api_placeholder: "Enter your custom server without a trailing / (e.g. {api_base_url})"
+
+# ---------------------------------------------------------------------------
+# Custom images (optional)
+# ---------------------------------------------------------------------------
+# Provide paths to 1-bit (black & white) PNG files to replace the default
+# TRMNL logos and loading screen. Paths are relative to the project root.
+# Leave commented-out to keep the built-in defaults.
+#
+images:
+  # Logo shown on OG-board message screens and QA (86×86 px, 1-bit PNG)
+  logo_small: "assets/logo_small.png"
+
+  # Logo shown on X-board message screens and modem flash (240×240 px, 1-bit PNG)
+  logo_medium: "assets/logo_medium.png"
+
+  # Splash / loading screen for OG boards (800×480 px, 1-bit PNG)
+  loading: "assets/loading.png"
+
+  # Captive-portal web logo (SVG file, any size)
+  portal_logo: "assets/logo.svg"

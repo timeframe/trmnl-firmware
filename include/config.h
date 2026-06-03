@@ -178,6 +178,9 @@ enum WIFI_CONNECT_RETRY_TIME // Time to sleep before trying to connect to the Wi
 #define BUTTON_DOUBLE_CLICK_WINDOW 800
 
 #define SERVER_MAX_RETRIES 3
-#define API_BASE_URL "https://trmnl.app"
+
+#include "branding.h"
+#define API_BASE_URL BRAND_API_BASE_URL
+#define WIFI_SSID    BRAND_WIFI_AP_SSID
 
 #endif

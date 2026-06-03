@@ -1,3 +1,4 @@
+#include "config.h"
 #include "WifiCaptive.h"
 #include <WiFi.h>
 #include <trmnl_log.h>
@@ -441,7 +442,7 @@ std::vector<WifiNetwork> WifiCaptive::getScannedUniqueNetworks(bool runScan)
     // Process each found network
     for (int i = 0; i < n; ++i)
     {
-        if (!WiFi.SSID(i).equals("TRMNL"))
+        if (!WiFi.SSID(i).startsWith(WIFI_SSID))
         {
             String ssid = WiFi.SSID(i);
             int32_t rssi = WiFi.RSSI(i);
