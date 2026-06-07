@@ -1251,7 +1251,13 @@ void bl_init(void)
 
     Log_info("FW version %s", FW_VERSION_STRING);
 
-    showMessageWithLogo(WIFI_CONNECT, "", false, FW_VERSION_STRING, "");
+    uint64_t mac = ESP.getEfuseMac();
+    char macSuffix[7];
+    snprintf(macSuffix, sizeof(macSuffix), "%02X%02X%02X",
+        (uint8_t)(mac >> 24), (uint8_t)(mac >> 32), (uint8_t)(mac >> 40));
+    String apSsid = String(BRAND_WIFI_AP_SSID) + "-" + macSuffix;
+
+    showMessageWithLogo(WIFI_CONNECT, "", false, FW_VERSION_STRING, apSsid);
 #ifdef BOARD_TRMNL_X
     // set TAP mode as default
     iqs323_task_i2c_lock();
@@ -1260,7 +1266,7 @@ void bl_init(void)
     touchbar_tap_mode = true;
 
     static uint32_t s_corners_start_ms = 0;
-    WifiCaptivePortal.setPortalTickCallback([]() {
+    WifiCaptivePortal.setPortalTickCallback([apSsid]() {
       if (in_power_off_confirmation) return;
       if (millis() < s_power_off_cooldown_until) return;
       iqs323_task_i2c_lock();
@@ -1279,7 +1285,7 @@ void bl_init(void)
           // Only reached on cancel — confirmed path calls ESP.restart()
           s_power_off_cooldown_until = millis() + 2000;
           iqs323_task_i2c_unlock();
-          showMessageWithLogo(WIFI_CONNECT, "", false, FW_VERSION_STRING, "");
+          showMessageWithLogo(WIFI_CONNECT, "", false, FW_VERSION_STRING, apSsid);
           return;
         }
       } else {
