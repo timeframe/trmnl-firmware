@@ -13,6 +13,14 @@ static unsigned long wait_for_button_release(unsigned long start_time) {
     }
     delay(10);
   }
+  if (millis() - start_time >= BUTTON_SOFT_RESET_TIME) {
+    // Soft reset threshold reached — triple beep to signal the user can release.
+    buzzer_beep_pattern(3, 100, 100);
+  } else if (!hold_buzzer_fired) {
+    // Single beep on release for a short press (e.g. the refresh trigger), unless
+    // the longer hold pattern already fired.
+    buzzer_beep(100);
+  }
   return millis() - start_time;
 }
 

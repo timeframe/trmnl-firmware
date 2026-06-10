@@ -160,6 +160,8 @@ enum WIFI_CONNECT_RETRY_TIME // Time to sleep before trying to connect to the Wi
 #define PIN_VBAT_SWITCH 40
 #define VBAT_SWITCH_LEVEL HIGH
 #define DEVICE_MODEL "reTerminal E1003"
+#define PIN_BUZZER 45          // passive buzzer (MLT-8530) via NPN transistor
+#define BUZZER_FREQ 2700       // resonant frequency of MLT-8530 in Hz
 #endif
 
 #if defined(BOARD_XIAO_EPAPER_DISPLAY) || defined(BOARD_SEEED_RETERMINAL_E1001) || defined(BOARD_SEEED_RETERMINAL_E1002)
