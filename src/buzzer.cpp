@@ -23,15 +23,27 @@ void buzzer_init(void)
 
 void buzzer_on(void)
 {
+#if ESP_ARDUINO_VERSION >= ESP_ARDUINO_VERSION_VAL(3, 0, 0)
+    // Arduino-ESP32 core 3.x: pin-based LEDC API.
+    ledcAttach(PIN_BUZZER, BUZZER_FREQ, BUZZER_RESOLUTION);
+    ledcWrite(PIN_BUZZER, BUZZER_DUTY);
+#else
+    // Arduino-ESP32 core 2.x: channel-based LEDC API.
     ledcSetup(BUZZER_CHANNEL, BUZZER_FREQ, BUZZER_RESOLUTION);
     ledcAttachPin(PIN_BUZZER, BUZZER_CHANNEL);
     ledcWrite(BUZZER_CHANNEL, BUZZER_DUTY);
+#endif
 }
 
 void buzzer_off(void)
 {
+#if ESP_ARDUINO_VERSION >= ESP_ARDUINO_VERSION_VAL(3, 0, 0)
+    ledcWrite(PIN_BUZZER, 0);
+    ledcDetach(PIN_BUZZER);
+#else
     ledcWrite(BUZZER_CHANNEL, 0);
     ledcDetachPin(PIN_BUZZER);
+#endif
     digitalWrite(PIN_BUZZER, LOW);
 }
 

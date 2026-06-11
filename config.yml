@@ -51,14 +51,14 @@ urls:
 strings:
   # -- Shipment / first-boot screens --
   welcome: "Welcome to {device_name}."
-  dock_instructions: "Attach the dock and a USB-C to get started."
+  dock_instructions: "Attach the dock and a USB-C cable to get started."
 
   # -- WiFi setup (simple status screen) --
   wifi_connect_short: "Connect to {device_name} WiFi"
   wifi_connect_subtitle: "on your phone or computer"
 
   # -- WiFi setup (full screen with QR code) --
-  firmware_label: "{device_name} firmware"
+  firmware_label: "firmware"
   wifi_connect_message: "Connect your phone or computer to the {device_name} WiFi"
   wifi_connect_qr_help: "or scan the QR code for help"
 
@@ -68,17 +68,17 @@ strings:
 
   # -- WiFi failure --
   wifi_failed: "Can't establish WiFi connection."
-  wifi_failed_help_button: "Hold button on the back to reset WiFi, or scan QR Code for help."
-  wifi_failed_help_touchbar: "Hold left and right corner of touch bar to reset WiFi, or scan QR Code for help."
+  wifi_failed_help_button: "Hold green button for 15 seconds until you hear three beeps to reset WiFi"
+  wifi_failed_help_touchbar: "Hold left and right corner of touch bar to reset WiFi"
 
   # -- API / connectivity errors --
-  wifi_internal_error: "WiFi connected, but"
-  api_connection_failed_1: "API connection cannot be"
-  api_connection_failed_2: "established. Try to refresh,"
-  api_connection_failed_3: "or scan QR Code for help."
+  wifi_internal_error: "WiFi connected, but API connection cannot be established"
+  api_connection_failed_1: "Hold green button for 15 seconds until you hear three beeps to reset."
+  api_connection_failed_2: ""
+  api_connection_failed_3: ""
   wifi_weak: "WiFi connected but signal is weak"
   api_request_failed: "WiFi connected, request to API failed."
-  api_unable_to_connect: "WiFi connected, unable connect to API."
+  api_unable_to_connect: "WiFi connected, unable connect to internet. Try restarting your router."
   api_setup_failed: "WiFi connected, /api/setup returned error."
   api_size_error: "WiFi connected, {device_name} content malformed."
   api_firmware_update_error: "WiFi connected, could not get firmware update from API."
@@ -86,13 +86,13 @@ strings:
 
   # -- Action prompts (original device) --
   tap_button: "Short click the button on back,"
-  hold_button_reset: "Wait or reset by holding button on back."
+  hold_button_reset: "Wait or reset by holding button on back for 15 seconds until you hear three beeps."
 
   # -- Action prompts (touchbar device) --
   tap_touchbar: "Tap the middle of touch bar,"
   hold_touchbar_reset: "Wait or reset by holding left and right corner of touch bar."
 
-  check_internet: "otherwise check your internet."
+  check_internet: ""
 
   # -- WiFi reset confirmation --
   wifi_reset_confirm: "Are you sure you want to reset WiFi settings?"
@@ -142,3 +142,4 @@ images:
 
   # Captive-portal web logo (SVG file, any size)
   portal_logo: "assets/logo.svg"
+ 

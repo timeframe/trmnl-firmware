@@ -5,6 +5,7 @@
 #include "wifi-helpers.h"
 #include "esp_event.h"
 #include "esp_wifi.h"
+#include <vector>
 
 void captureEventData(WiFiEvent_t event, WiFiEventInfo_t info, WifiEventData *eventData)
 {
@@ -37,14 +38,22 @@ WifiConnectionResult initiateConnectionAndWaitForOutcome(const WifiCredentials c
 {
     WifiEventData eventData;
 
+    // Register handlers and remember each registration id. We must remove by the
+    // exact id returned by onEvent(): removeEvent() matches on registration id, not
+    // on event type, so passing the event-type index here would silently fail to
+    // remove the handlers. A leaked handler captures &eventData (a stack local) and
+    // would corrupt the stack when a later WiFi event (e.g. from WiFi.disconnect())
+    // fires after this function returns.
+    std::vector<wifi_event_id_t> handlerIds;
     for (int i = ARDUINO_EVENT_WIFI_READY; i < ARDUINO_EVENT_MAX; i++)
     {
-        WiFi.onEvent([i, &eventData](WiFiEvent_t event, WiFiEventInfo_t info)
+        wifi_event_id_t id = WiFi.onEvent([&eventData](WiFiEvent_t event, WiFiEventInfo_t info)
                      {
                          eventData.eventCount++;
 
                          captureEventData(event, info, &eventData); },
                      (arduino_event_id_t)i);
+        handlerIds.push_back(id);
     }
 
     auto beginResult = WiFi.begin(credentials.ssid.c_str(), credentials.pswd.c_str());
@@ -52,10 +61,10 @@ WifiConnectionResult initiateConnectionAndWaitForOutcome(const WifiCredentials c
 
     auto result = waitForConnectResult(CONNECTION_TIMEOUT);
 
-    // Clean up Arduino event handlers
-    for (int i = ARDUINO_EVENT_WIFI_READY; i < ARDUINO_EVENT_MAX; i++)
+    // Clean up Arduino event handlers (remove by the ids returned from onEvent)
+    for (wifi_event_id_t id : handlerIds)
     {
-        WiFi.removeEvent(i);
+        WiFi.removeEvent(id);
     }
 
     return {result, eventData};
