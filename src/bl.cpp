@@ -23,6 +23,7 @@
 #include <filesystem.h>
 #include <stored_logs.h>
 #include <button.h>
+#include "ship_mode.h"
 #include "api-client/submit_log.h"
 #include <api-client/setup.h>
 #include <special_function.h>
@@ -872,6 +873,14 @@ void bl_init(void)
       break;
     case SoftReset:
       resetDeviceCredentials();
+      break;
+#ifdef SHIP_MODE_SUPPORTED
+    case ShipMode:
+      enter_ship_mode(); // does not return
+      break;
+#endif
+    default:
+      break;
     }
     Log_info("button handling end");
   }
@@ -1294,6 +1303,19 @@ void bl_init(void)
       iqs323_task_i2c_unlock();
     });
 #endif
+#ifdef SHIP_MODE_SUPPORTED
+    // Allow entering shipping mode from the setup portal: hold the green button
+    // for 30 s (staged beeps at 5 / 15 / 30 s). read_button_presses() blocks
+    // until release and drives the beep feedback; a 30 s hold enters ship mode.
+    WifiCaptivePortal.setPortalTickCallback([]() {
+      pinMode(PIN_INTERRUPT, INPUT);
+      if (digitalRead(PIN_INTERRUPT) == LOW) {
+        if (read_button_presses() == ShipMode) {
+          enter_ship_mode(); // does not return
+        }
+      }
+    });
+#endif // SHIP_MODE_SUPPORTED
     WifiCaptivePortal.setResetSettingsCallback(resetDeviceCredentials);
     res = WifiCaptivePortal.startPortal();
     if (!res)
@@ -3691,7 +3713,12 @@ static uint8_t *storedLogoOrDefault(int iType)
     return const_cast<uint8_t *>(logo_medium);
 #else
   if (iType == 0) {
+#if defined(BOARD_SEEED_RETERMINAL_E1001) || defined(BOARD_SEEED_RETERMINAL_E1002)
+    // Match the larger logo used on the shipment / first-boot screens.
+    return const_cast<uint8_t *>(logo_medium);
+#else
     return const_cast<uint8_t *>(logo_small);
+#endif
   } else {
     // Force the loading screen to always use the slower update method because
     // we don't know (yet) if the panel can handle the faster update modes

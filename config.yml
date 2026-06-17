@@ -36,7 +36,7 @@ urls:
   setup_url: "www.timeframe.app/start"
 
   # URL encoded into the WiFi-connect help QR code.
-  wifi_connect_qr_url: "https://www.timeframe.app/start"
+  wifi_connect_qr_url: "https://www.timeframe.app/wifi_help"
 
   # URL encoded into the WiFi-failed help QR code.
   wifi_failed_qr_url: "https://www.timeframe.app/wifi_help"
@@ -50,7 +50,7 @@ urls:
 #
 strings:
   # -- Shipment / first-boot screens --
-  welcome: "Welcome to {device_name}."
+  welcome: "Turn on power switch and plug into power to get started."
   dock_instructions: "Attach the dock and a USB-C cable to get started."
 
   # -- WiFi setup (simple status screen) --
@@ -60,10 +60,13 @@ strings:
   # -- WiFi setup (full screen with QR code) --
   firmware_label: "firmware"
   wifi_connect_message: "Connect your phone or computer to the {device_name} WiFi"
+  # {ssid} is substituted at runtime with the device's actual hotspot name.
+  wifi_connect_ssid: "Connect to {ssid} WiFi"
   wifi_connect_qr_help: "or scan the QR code for help"
 
   # -- Friendly ID / onboarding screen --
   setup_visit: "Please visit {setup_url}"
+  friendly_id_prefix: "with pairing code "
   friendly_id_suffix: "to finish setup"
 
   # -- WiFi failure --

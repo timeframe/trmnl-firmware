@@ -2494,7 +2494,7 @@ void display_show_msg(uint8_t *image_buffer, MSG message_type, String friendly_i
 #endif
         bbep.println(string1);
 
-        String string2 = "with Friendly ID ";
+        String string2 = BRAND_STR_FRIENDLY_ID_PREFIX;
         if (id)
         {
             string2 += friendly_id;
@@ -2518,7 +2518,8 @@ void display_show_msg(uint8_t *image_buffer, MSG message_type, String friendly_i
         // otherwise fall back to the generic connect message.
         String connectMsg;
         if (message.length() > 0) {
-            connectMsg = "Connect to " + message + " WiFi";
+            connectMsg = BRAND_STR_WIFI_CONNECT_SSID;
+            connectMsg.replace("{ssid}", message);
         } else {
             connectMsg = BRAND_STR_WIFI_CONNECT_MESSAGE;
         }
