@@ -104,8 +104,19 @@ void ship_mode_boot_check()
     bool started = checkIfShipmentStarted();
     Log_info("Ship boot check: ship_done=%d ship_started=%d cause=%d",
              shipped, started, (int)esp_sleep_get_wakeup_cause());
-    if (shipped || !started) {
-        return; // not shipping — normal boot
+    if (shipped) {
+        return; // already shipped — normal boot
+    }
+
+    if (!started) {
+        // Never shipped and no shipment in progress (e.g. freshly flashed at the
+        // factory): default into shipping mode so the device can be boxed and
+        // shipped. Completing the shipment (charger reconnect or button) sets
+        // ship_done, so this only happens until the unit is first powered by the
+        // customer.
+        Log_info("Ship boot check: defaulting into shipping mode after flash");
+        display_init();
+        enter_ship_mode(); // does not return
     }
 
     esp_sleep_wakeup_cause_t cause = esp_sleep_get_wakeup_cause();
@@ -136,7 +147,7 @@ void ship_mode_boot_check()
 
 void enter_ship_mode()
 {
-    Log_info("Ship mode requested via button hold");
+    Log_info("Entering shipping mode");
 
     // Persist shipment-in-progress immediately. Clear any stale "shipped" flag
     // from a previous shipment so this run isn't treated as already complete.
