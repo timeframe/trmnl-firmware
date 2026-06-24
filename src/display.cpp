@@ -2488,21 +2488,37 @@ void display_show_msg(uint8_t *image_buffer, MSG message_type, String friendly_i
         const char string1[] = BRAND_STR_SETUP_VISIT;
         bbep.getStringBox(string1, &rect);
 #ifdef __BB_EPAPER__
-        bbep.setCursor((bbep.width() - rect.w)/2, 400);
+        bbep.setCursor((bbep.width() - rect.w)/2, 360);
 #else
-        bbep.setCursor((bbep.width() - rect.w)/2, bbep.height() - 140 - rect.h*2);
+        bbep.setCursor((bbep.width() - rect.w)/2, bbep.height() - 140 - rect.h*4);
 #endif
         bbep.println(string1);
 
-        String string2 = BRAND_STR_FRIENDLY_ID_PREFIX;
+        // Descriptive prefix on its own line, in the small body font.
+        const char prefix[] = BRAND_STR_FRIENDLY_ID_PREFIX;
+        bbep.getStringBox(prefix, &rect);
+        bbep.setCursor((bbep.width() - rect.w)/2, -1);
+        bbep.println(prefix);
+
+        // Pairing code shown prominently in a large, bold font.
         if (id)
         {
-            string2 += friendly_id;
+            bbep.setFont(Roboto_Black_24);
+            bbep.getStringBox(friendly_id.c_str(), &rect);
+            bbep.setCursor((bbep.width() - rect.w)/2, -1);
+            bbep.println(friendly_id);
+#if defined( BOARD_X_CLASS )
+            bbep.setFont(Inter_18);
+#else
+            bbep.setFont(nicoclean_8);
+#endif
         }
-        string2 += " " BRAND_STR_FRIENDLY_ID_SUFFIX;
-        bbep.getStringBox(string2, &rect);
+
+        // Descriptive suffix on its own line, back in the small body font.
+        const char suffix[] = BRAND_STR_FRIENDLY_ID_SUFFIX;
+        bbep.getStringBox(suffix, &rect);
         bbep.setCursor((bbep.width() - rect.w)/2, -1);
-        bbep.print(string2);
+        bbep.print(suffix);
     }
     break;
     case WIFI_CONNECT:
