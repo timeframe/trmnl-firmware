@@ -129,8 +129,22 @@ extern BQ27427 lipo; // Use lipo.[] to interact with the library in an Arduino
 #include "nicoclean_8.h"
 #include "Inter_18.h"
 #include "Roboto_Black_24.h"
+#ifdef BOARD_SEEED_RETERMINAL_E1003
+#include "logo_big.h"
+#endif
 #include <globals.h>
 static uint8_t *pDither;
+
+static uint8_t *messageLogo(uint8_t *image_buffer, MSG message_type)
+{
+#ifdef BOARD_SEEED_RETERMINAL_E1003
+    if (message_type == FRIENDLY_ID || message_type == WIFI_CONNECT)
+    {
+        return const_cast<uint8_t *>(logo_big);
+    }
+#endif
+    return image_buffer;
+}
 
 #ifdef BB_EPAPER
 static bool display_update_epaper(int refreshMode, bool wait, bool writePlane = false, uint8_t plane = PLANE_0)
@@ -1952,6 +1966,7 @@ uint8_t *buffer;
  */
 void display_show_msg(uint8_t *image_buffer, MSG message_type, const char *message_text)
 {
+    image_buffer = messageLogo(image_buffer, message_type);
     auto width = display_width();
     auto height = display_height();
     UWORD Imagesize = ((width % 8 == 0) ? (width / 8) : (width / 8 + 1)) * height;
@@ -2588,6 +2603,7 @@ void display_show_msg_qa(uint8_t *image_buffer, const float *voltage, const floa
  */
 void display_show_msg(uint8_t *image_buffer, MSG message_type, String friendly_id, bool id, const char *fw_version, String message)
 {
+    image_buffer = messageLogo(image_buffer, message_type);
     Log_info("Free heap in display_show_msg - %" PRIu32, ESP.getMaxAllocHeap());
     Log_info("maximum_compatibility = %d\n", apiDisplayResult.response.maximum_compatibility);
 #ifdef BB_EPAPER

@@ -27,6 +27,7 @@
 #include <math.h>
 #include <filesystem.h>
 #include <stored_logs.h>
+#include <wifi_retry_policy.h>
 #include <button.h>
 #include "ship_mode.h"
 #include "api-client/submit_log.h"
@@ -3063,24 +3064,20 @@ static void wifiErrorDeepSleep()
   }
 
   uint8_t retry_count = preferences.getInt(PREFERENCES_CONNECT_WIFI_RETRY_COUNT);
+  WifiRetryAction retry_action = wifiRetryAction(retry_count);
 
   Log_info("WIFI connection failed! Retry count: %d \n", retry_count);
 
-  switch (retry_count)
+  if (retry_action.buttonOnly)
   {
-  case 1:
-  case 2:
-  case 3:
-    refreshInterval.applyWifiRetry(retry_count);
-    break;
-
-  default:
     preferences.putInt(PREFERENCES_CONNECT_WIFI_RETRY_COUNT, 1);
     showMessageWithLogo(WIFI_RETRY_LIMIT);
     display_sleep();
     goToSleepButtonOnly();
     return;
   }
+
+  refreshInterval.applyWifiRetry(retry_count);
   retry_count++;
   preferences.putInt(PREFERENCES_CONNECT_WIFI_RETRY_COUNT, retry_count);
 
